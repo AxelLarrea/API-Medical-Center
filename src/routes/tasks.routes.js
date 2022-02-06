@@ -1,22 +1,37 @@
 const { Router } = require('express');
-const { getAllTasks, 
-        getTask, 
-        createTask, 
-        deleteTask, 
-        updateTask 
+const { getAllObras, 
+        getObra, 
+        createObra, 
+        deleteObra, 
+        updateObra, 
+        getAllMedicos,
+        getMedico,
+        updateMedico,
+        createMedico
     } = require('../controllers/tasks.controllers');
 
 
 const router = Router();
 
-router.get('/tarea', getAllTasks);
+// Rutas para Obras Sociales
 
-router.get('/tarea/:id', getTask);
+router.get('/obra-social', getAllObras);
 
-router.post('/tarea', createTask);
+router.get('/obra-social/:id', getObra);
 
-router.delete('/tarea/:id', deleteTask);
+router.post('/obra-social', createObra);
 
-router.put('/tarea/:id', updateTask);
+router.delete('/obra-social/:id', deleteObra);
+
+router.put('/obra-social/:id', updateObra);
+
+
+
+// Rutas para Médicos
+
+router.get('/medicos', getAllMedicos);
+router.get('/medicos/:id', getMedico);
+router.put('/medicos/:id', updateMedico);
+router.post('/medicos', createMedico);
 
 module.exports = router;
