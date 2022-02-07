@@ -7,7 +7,8 @@ const { getAllObras,
         getAllMedicos,
         getMedico,
         updateMedico,
-        createMedico
+        createMedico,
+        deleteMedico
     } = require('../controllers/tasks.controllers');
 
 
@@ -33,5 +34,6 @@ router.get('/medicos', getAllMedicos);
 router.get('/medicos/:id', getMedico);
 router.put('/medicos/:id', updateMedico);
 router.post('/medicos', createMedico);
+router.delete('/medicos/:id', deleteMedico);
 
 module.exports = router;

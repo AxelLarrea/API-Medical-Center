@@ -158,17 +158,31 @@ const createMedico = async (req, res, next) => {
             'insert into medico (dni, cuil, nromatricula, provincia, ciudad, direccion, codigopostal, especialidad, mutual) values ($1, $2, $3, $4, $5, $6, $7, $8, $9) returning *', 
             [dni, cuil, nromatricula, provincia, ciudad, direccion, codigopostal, especialidad, mutual]);
 
-            if (result.rows.length === 0 || result2.rows.length === 0) 
-            return res.status(404).json({
-                message: "Médico no encontrado"
-        });
         
-        res.json(result.rows[0]);
+        res.json([result.rows[0], result2.rows[0]]);
     } catch (error) {
         next(error);
     }
 }
 
+const deleteMedico = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const dni = id.slice(2,10);
+
+        const result = await pool.query('delete from medico where cuil = $1', [id]);
+        const result2 = await pool.query('delete from usuario where dni = $1', [dni]);
+
+        if (result.rowCount.length === 0 || result2.rowCount.length === 0) 
+            return res.status(404).json({
+                message: "Médico y usuario no encontrado"
+        });
+        
+        res.sendStatus(204);
+    } catch (error) {
+        next(error);
+    }
+}
 
 module.exports = {
     getAllObras,
@@ -179,5 +193,6 @@ module.exports = {
     getAllMedicos,
     getMedico,
     updateMedico,
-    createMedico
+    createMedico,
+    deleteMedico
 }
