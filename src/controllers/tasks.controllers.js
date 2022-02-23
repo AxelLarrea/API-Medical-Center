@@ -335,6 +335,18 @@ const PutTurnoTransaccion = async (req, res, next) => {
 }
 
 
+const PutTurnoTransaccionFalse = async (req, res, next) => {
+    try{
+        const { transaccion } = req.params;
+
+        const result = await pool.query('update turno set pago = $1 where id_transaccion = $2', ["false", transaccion]);
+        res.json(result.rows[0]);
+
+    } catch (error){
+        next(error)
+    }
+}
+
 
 const createUsuario = async (req, res, next) => {
     try {
@@ -367,6 +379,20 @@ const deleteTurnoImpagoTransaccion = async (req, res, next) => {
     }
     
 }
+
+const getTurnosHistoria = async (req, res, next) => {
+
+    const {id} = req.params;
+
+    try {
+        const result = await pool.query('select * from historiaxturno where id_transaccion = $1', [id]);
+        res.json(result.rows);
+        
+    } catch (error) {
+        next(error);
+    }
+}
+
 
 
 // Funciones para Obras Sociales
@@ -586,5 +612,7 @@ module.exports = {
     deleteTurnoTransaccion,
     GetTurnoTransaccion,
     PutTurnoTransaccion,
-    deleteTurnoImpagoTransaccion
+    deleteTurnoImpagoTransaccion,
+    PutTurnoTransaccionFalse,
+    getTurnosHistoria
 }

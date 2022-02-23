@@ -32,7 +32,9 @@ const { getAllObras,
         deleteTurnoTransaccion,
         GetTurnoTransaccion,
         PutTurnoTransaccion,
-        deleteTurnoImpagoTransaccion
+        deleteTurnoImpagoTransaccion,
+        PutTurnoTransaccionFalse,
+        getTurnosHistoria
     } = require('../controllers/tasks.controllers');
 
 
@@ -108,7 +110,10 @@ router.get('/turnoindividual/:transaccion', GetTurnoTransaccion);
 
 router.put('/turnouptransaccion/:transaccion', PutTurnoTransaccion);
 
-router.delete('/deleteimpagos', deleteTurnoImpagoTransaccion)
+router.delete('/deleteimpagos', deleteTurnoImpagoTransaccion);
 
+router.put('/turnouptransaccionfalse/:transaccion', PutTurnoTransaccionFalse);
+
+router.get('/turnoshistoria/:id', getTurnosHistoria);
 
 module.exports = router;
