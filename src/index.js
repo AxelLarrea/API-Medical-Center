@@ -67,11 +67,9 @@ app.post('/checkout', (req, res) => {
             }
         ],
         back_urls: {
-			"success": "http://localhost:3000/cobros",
-			"failure": "http://localhost:8080/feedback",
-			"pending": "http://localhost:8080/feedback"
-		},
-		auto_return: "approved"
+			"success": `http://localhost:3000/aprobadomp`,
+			"failure": "http://localhost:3000/errormp",
+		}
     };
       
     mercadopago.preferences.create(preference)

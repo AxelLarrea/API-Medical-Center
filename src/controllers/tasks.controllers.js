@@ -1,4 +1,372 @@
 const pool = require('../db');
+const mercadopago = require('mercadopago');
+
+
+mercadopago.configure({
+    access_token: 'TEST-6681852449549527-011114-6e1298bcd02883483764079ad1bb0677-323174271'
+})
+
+
+const getMedicosObraSocial = async (req, res, next) => {
+    try {
+        const result = await pool.query('select * from medico_especialidad_obraSocial');
+        res.json(result.rows);
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+
+const getAllMedico = async (req, res, next) => {
+    try {
+        const result = await pool.query('select * from lista_medico');
+        res.json(result.rows);
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+const GetEspecialidades = async (req, res, next) => {
+    try{
+        const result = await pool.query('select * from especialidad');
+        res.json(result.rows);
+    } catch (error) {
+        next(error);
+    }
+}
+
+const GetObraSocial = async (req, res, next) => {
+    try{
+        const result = await pool.query('select * from obrasocial');
+        res.json(result.rows);
+    } catch (error) {
+        next(error);
+    }
+}
+
+const GetObraSocialIndividual = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        
+        const result = await pool.query('select * from obrasocial where id = $1', [id]);
+        
+        if (result.rows.length === 0) 
+        return res.status(404).json({
+            message: "Obra social no encontrada"
+        });
+        
+        res.json(result.rows[0]);
+    } catch (error) {
+        next(error);
+    }
+}
+
+const GetHistoriaClinicaIndividual = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        
+        const result = await pool.query('select * from historiaclinica_paciente where dni = $1',[id]);
+        
+        if (result.rows.length === 0) 
+        return res.status(404).json({
+            message: "Historia clinica no encontrada"
+        });
+        
+        res.json(result.rows);
+    } catch (error) {
+        next(error);
+    }
+}
+
+const GetHistoriaClinicaDetalleIndividual = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        
+        const result = await pool.query('select * from historiaclinica_paciente where id = $1',[id]);
+        
+        if (result.rows.length === 0) 
+        return res.status(404).json({
+            message: "Historia clinica no encontrada"
+        });
+        
+        res.json(result.rows[0]);
+    } catch (error) {
+        next(error);
+    }
+}
+
+
+const GetTurno = async (req, res, next) => {
+    try{
+        const result = await pool.query('select * from turno');
+        res.json(result.rows);
+    } catch (error) {
+        next(error);
+    }
+}
+
+const GetTipoTurno = async (req, res, next) => {
+    try{
+        const result = await pool.query('select * from tipoturno');
+        res.json(result.rows);
+    } catch (error) {
+        next(error);
+    }
+}
+
+const getTurnosIndividual = async (req, res, next) => {
+    try{
+        const { id } = req.params;
+        const result = await pool.query('select fecha, hora, montoapagar, nombre, apellido, id from turno_usuario where id_usuariop = $1',
+                        [id]);
+        res.json(result.rows);
+    } catch (error) {
+        next(error);
+    }
+}
+
+const deleteTurnoIndividual = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        const result = await pool.query('delete from turno where id = $1', [id]);
+
+        if (result.rowCount.length === 0) 
+            return res.status(404).json({
+                message: "Turno no encontrado"
+        });
+        
+        res.sendStatus(204);
+    } catch (error) {
+        next(error);
+    }
+    
+}
+
+
+const updateNomyApe = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { nombre, apellido} = req.body;
+
+        const result = await pool.query(
+            'update usuario set nombre = $1, apellido = $2 where dni = $3 returning *', 
+            [nombre, apellido, id]);
+
+        if (result.rows.length === 0) 
+            return res.status(404).json({
+                message: "Usuario no encontrado"
+        });
+        
+        res.json(result.rows[0]);
+    } catch (error) {
+        next(error);
+    }
+}
+
+const updateCorreoElectronico = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { correo} = req.body;
+
+        const result = await pool.query(
+            'update usuario set correoelectronico = $1 where dni = $2 returning *', 
+            [correo, id]);
+
+        if (result.rows.length === 0) 
+            return res.status(404).json({
+                message: "Usuario no encontrado"
+        });
+        
+        res.json(result.rows[0]);
+    } catch (error) {
+        next(error);
+    }
+}
+
+const updateContraseña = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { contraseña } = req.body;
+
+        const result = await pool.query(
+            'update usuario set contraseña = $1 where dni = $2 returning *', 
+            [contraseña, id]);
+
+        if (result.rows.length === 0) 
+            return res.status(404).json({
+                message: "Usuario no encontrado"
+        });
+        
+        res.json(result.rows[0]);
+    } catch (error) {
+        next(error);
+    }
+}
+
+const updateTelefono = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { telefono } = req.body;
+
+        const result = await pool.query(
+            'update usuario set telefono = $1 where dni = $2 returning *', 
+            [telefono, id]);
+
+        if (result.rows.length === 0) 
+            return res.status(404).json({
+                message: "Usuario no encontrada"
+        });
+        
+        res.json(result.rows[0]);
+    } catch (error) {
+        next(error);
+    }
+}
+
+
+/* DATOS DE LA TABLA NOTICIAS */
+
+const getAllNoticias = async (req, res, next) => {
+
+    try {
+        const result = await pool.query('select * from noticia');
+        res.json(result.rows);
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+
+
+const getNoticia = async (req, res, next) => {
+    
+    try {
+        const { id } = req.params;
+        
+        const result = await pool.query('select * from noticia where id = $1', [id]);
+        
+        if (result.rows.length === 0) 
+        return res.status(404).json({
+            message: "Noticia no encontrada"
+        });
+        
+        res.json(result.rows[0]);
+    } catch (error) {
+        next(error);
+    }
+}
+
+/* """"""""""LOGIN""""""""""" */
+
+const getUsuarios = async (req, res, next) => {
+    try {
+        const { correo } = req.params;
+        
+        const result = await pool.query('select correoelectronico, contraseña, dni, idrol from usuario where correoelectronico  = $1', [correo]);
+        res.json(result.rows);
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+
+
+const createTurno = async (req, res, next) => {
+    try{
+        const { precio, fecha, hora, paciente, tipoTurno, medico, id_transaccion, pago } = req.body;
+
+        const result = await pool.query(
+            'insert into turno (fecha, hora, montoapagar, id_usuariom, id_usuariop, id_tipoturno, id_transaccion, pago) values($1, $2, $3, $4, $5, $6, $7, $8) returning *',
+            [fecha, hora, precio, medico, paciente, tipoTurno, id_transaccion, pago]);
+
+            res.json(result.rows[0]);
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+
+const deleteTurnoTransaccion = async (req, res, next) => {
+    try{
+        const { transaccion } = req.params;
+
+        const result = await pool.query('delete from turno where id_transaccion = $1', [transaccion]);
+
+        if (result.rowCount.length === 0) 
+            return res.status(404).json({
+                message: "Turno no encontrado"
+        });
+        
+        res.sendStatus(204);
+    } catch (error) {
+        next(error);
+    }    
+} 
+
+const GetTurnoTransaccion = async (req, res, next) => {
+    try{
+        const { transaccion } = req.params;
+    
+        const result = await pool.query('select * from turno_usuario_transaccion where id_transaccion = $1', [transaccion]);
+        
+        res.json(result.rows[0]);
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+const PutTurnoTransaccion = async (req, res, next) => {
+    try{
+        const { transaccion } = req.params;
+
+        const result = await pool.query('update turno set pago = $1 where id_transaccion = $2', ["true", transaccion]);
+        res.json(result.rows[0]);
+
+    } catch (error){
+        next(error)
+    }
+}
+
+
+
+const createUsuario = async (req, res, next) => {
+    try {
+        const { nombre , apellido, correoElectronico, contraseña, genero, fechaNac, dni, telefono, factorSanguineo, nroAfiliadoOS, id_obrasocial, idrol} = req.body;
+
+        const result = await pool.query(
+        'insert into usuario (dni, nombre, apellido, genero, correoelectronico, contraseña, fechanac, factorsanguineo, telefono, nroAfiliadoOS, id_obrasocial, idrol) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) returning *', 
+        [dni, nombre, apellido, genero, correoElectronico, contraseña, fechaNac, factorSanguineo, telefono, nroAfiliadoOS, id_obrasocial, idrol]
+        );
+
+        res.json(result.rows[0]);
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+const deleteTurnoImpagoTransaccion = async (req, res, next) => {
+    try {
+        const result = await pool.query('delete from turno where pago is false ');
+
+        if (result.rowCount.length === 0) 
+            return res.status(404).json({
+                message: "Obra social no encontrada"
+        });
+        
+        res.sendStatus(204);
+    } catch (error) {
+        next(error);
+    }
+    
+}
 
 
 // Funciones para Obras Sociales
@@ -190,9 +558,33 @@ module.exports = {
     createObra,
     deleteObra,
     updateObra,
-    getAllMedicos,
+    getAllMedico,
     getMedico,
     updateMedico,
     createMedico,
-    deleteMedico
+    deleteMedico,
+    getAllMedicos,
+    getAllNoticias,
+    getNoticia,
+    getUsuarios,
+    createUsuario,
+    GetEspecialidades,
+    GetObraSocial,
+    getMedicosObraSocial,
+    GetTurno,
+    GetTipoTurno,
+    GetObraSocialIndividual,
+    updateNomyApe,
+    updateTelefono,
+    updateCorreoElectronico,
+    updateContraseña,
+    getTurnosIndividual,
+    deleteTurnoIndividual,
+    GetHistoriaClinicaIndividual,
+    GetHistoriaClinicaDetalleIndividual,
+    createTurno,
+    deleteTurnoTransaccion,
+    GetTurnoTransaccion,
+    PutTurnoTransaccion,
+    deleteTurnoImpagoTransaccion
 }
